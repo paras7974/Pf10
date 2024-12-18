@@ -1,0 +1,128 @@
+<app-navbar></app-navbar>
+
+<style>
+  #nnn {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .panel-heading {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .content-wrapper {
+    background: url(assets/files/wall.jpg) no-repeat center center;
+    background-attachment: fixed;
+    background-size: cover;
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .table-responsive {
+    margin-top: 20px;
+  }
+
+  .full-height {
+    height: 100vh;
+  }
+</style>
+
+<div class="content-wrapper full-height">
+  <div class="container-fluid full-height">
+    <div class="panel panel-primary full-height">
+      <div class="panel-heading">
+        <h1 class="text-primary font-weight-bold">{{ 'ATMs List' | translate }}</h1>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-md-3">
+          <input type="date" class="form-control" [(ngModel)]="form.searchParams.lastRestockedDate"
+            (ngModelChange)="formatDate($event)" placeholder="{{ 'Search last Restocked Date' | translate }}">
+        </div>
+        <div class="col-md-3">
+          <input type="text" class="form-control" [(ngModel)]="form.searchParams.cashAvailable"
+            (input)="validateCashInput($event)" placeholder="{{ 'Search cash Available' | translate }}">
+          <div *ngIf="form.inputerror.cashAvailable" class="text-danger">
+            {{ form.inputerror.cashAvailable }}
+          </div>
+        </div>
+        <div class="col-md-3">
+          <select class="form-control" name="locationId" [(ngModel)]="form.searchParams.locationId">
+            <option [ngValue]="undefined">{{ 'Select locationId' | translate }}</option>
+            <option *ngFor="let obj of form.preload.locationList" [value]="obj.key">{{ obj.value }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row mt-3 justify-content-center">
+        <div class="col-md-2">
+          <button (click)="submit()" class="btn btn-primary btn-block">{{ 'Search' | translate }}</button>
+        </div>
+        <div class="col-md-2">
+          <button (click)="forward('/atms')" type="button" class="btn btn-success btn-block">{{ 'Add ATMs' | translate
+            }}</button>
+        </div>
+        <div class="col-md-2">
+          <button (click)="deleteMany()" class="btn btn-danger btn-block">{{ 'Delete' | translate }}</button>
+        </div>
+      </div>
+
+      <div *ngIf="form.error || form.message" class="row mt-3 justify-content-center">
+        <div class="col-md-6">
+          <div *ngIf="form.error" class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ form.message }}
+          </div>
+          <div *ngIf="!form.error && form.message" class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ form.message }}
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive mt-3">
+        <table class="table table-bordered table-hover font-weight-bold text-dark">
+          <thead class="thead-dark text-uppercase">
+            <tr align="center">
+              <th><input type="checkbox" [(ngModel)]="isMasterSel" name="list_name"
+                  (change)="checkUncheckAll($event)" /></th>
+              <th>{{ 'S.No' }}</th>
+              <th>{{ 'Cash Available' }}</th>
+              <th>{{ 'Last Restocked Date' }}</th>
+              <th>{{ 'locationId' }}</th>
+              <th>{{ 'Edit' }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of form.list; let i = index" align="center">
+              <td><input type="checkbox" #checkboxes (change)="checklistUpdate()" name="list_name" [id]="m.id" /></td>
+              <td>{{ (form.pageNo * 5) + i + 1 }}</td>
+              <td>{{ m.cashAvailable }}</td>
+              <td>{{ convertToLocalDate(m.lastRestockedDate) }}</td>
+              <td>{{ m.locationName }}</td>
+              <td>
+                <button class="fa fa-edit text-primary" id="nnn" (click)="forward('/atms/' + m.id)"></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between mt-3">
+        <button (click)="previous()" [disabled]="form.pageNo == 0" class="btn btn-info">{{ 'Previous' | translate
+          }}</button>
+        <div *ngIf="form.list.length == 0">
+          <a class="btn btn-warning mr-1" [routerLink]="['/atmslist']" (click)="exit()">{{ 'Back' | translate }}</a>
+        </div>
+        <button (click)="next()" [disabled]="nextList == 0" class="btn btn-info">{{ 'Next' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

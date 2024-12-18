@@ -1,0 +1,156 @@
+<app-navbar></app-navbar>
+
+<style>
+  #nnn {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .panel-heading {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .search-inputs {
+    margin-top: 20px;
+  }
+
+  .search-inputs .form-control,
+  .search-inputs .btn {
+    margin-bottom: 10px;
+  }
+
+  .content-wrapper {
+    background: url(assets/files/wall.jpg) no-repeat center center;
+    background-attachment: fixed;
+    background-size: cover;
+    width: auto;
+    height: 105vh;
+    padding: 20px;
+  }
+
+  .table-responsive {
+    margin-top: 20px;
+  }
+</style>
+
+<div class="content-wrapper">
+  <div class="container-fluid">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h1 class="text-primary font-weight-bold">{{ 'Inevntory List' | translate }}</h1>
+      </div>
+
+      <div class="row search-inputs justify-content-center">
+        <div class="col-md-3">
+          <input type="text" class="form-control" [(ngModel)]="form.searchParams.supplierName"
+            placeholder="{{ 'Search supplier Name' | translate }}" maxlength="30" (input)="validateInput($event, 'name')">
+          <div *ngIf="!isValidNameInput" class="text-danger">{{ nameErrorMessage }}</div>
+        </div>
+        <!--  <div class="col-md-3">
+          <input type="text" class="form-control" [(ngModel)]="form.searchParams.mobile"
+            placeholder="{{ 'Search mobile' | translate }}" (input)="validateInput($event, 'mobile')">
+          <div *ngIf="!isValidMobileInput" class="text-danger">{{ mobileErrorMessage }}</div>
+        </div> -->
+
+        <div class="col-md-3">
+          <input type="date" class="form-control" [(ngModel)]="form.searchParams.lastUpdatedDate"
+            (ngModelChange)="formatDate($event)" placeholder="{{ 'Search lastUpdatedDate' | translate }}">
+        </div>
+
+        <div class="col-md-3">
+          <input type="text" 
+                 class="form-control" 
+                 [(ngModel)]="form.searchParams.quantity" 
+                 placeholder="{{ 'Search quantity' | translate }}" 
+                 maxlength="4" 
+                 pattern="\d{0,4}" 
+                 #quantityInput="ngModel"
+                 (ngModelChange)="validateQuantity($event)">
+          <div *ngIf="quantityInput.invalid && (quantityInput.dirty || quantityInput.touched)" class="error-message">
+            <div *ngIf="quantityInput.errors.pattern">Please enter a valid quantity (up to 4 digits).</div>
+          </div>
+        </div>
+        
+        <div class="col-md-3">
+          <select class="form-control" name="productId" [(ngModel)]="form.searchParams.productId"
+            aria-label="ngSelected">
+            <option [ngValue]="null">{{ 'Select Product' | translate }}</option>
+            <option *ngFor="let obj of form.preload.productList" [ngValue]="obj.key">{{ obj.value }}</option>
+          </select>
+        </div>
+        </div>
+
+      <div class="row mt-2 justify-content-center">
+        <div class="col-md-2">
+          <button (click)="submit()" class="btn btn-primary btn-block">{{ 'Search' | translate }}</button>
+        </div>
+        <div class="col-md-2">
+          <button (click)="forward('/inventory')" type="button" class="btn btn-success btn-block">{{ 'Add Inventory' |
+            translate }}</button>
+        </div>
+        <div class="col-md-2">
+          <button (click)="deleteMany()" class="btn btn-danger btn-block">{{ 'Delete' | translate }}</button>
+        </div>
+      </div>
+
+      <div *ngIf="form.error || form.message" class="row mt-2 justify-content-center">
+        <div class="col-md-6">
+          <div *ngIf="form.error" class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ form.message }}
+          </div>
+          <div *ngIf="!form.error && form.message" class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ form.message }}
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive mt-3">
+        <table class="table table-bordered table-hover font-weight-bold text-dark">
+          <thead class="thead-dark text-uppercase">
+            <tr align="center">
+              <th><input type="checkbox" [(ngModel)]="isMasterSel" name="list_name"
+                  (change)="checkUncheckAll($event)" /></th>
+              <th>{{ 'S.No' }}</th>
+              <th>{{ 'supplier name' }}</th>
+              <th>{{ 'quantity' }}</th>
+              <th>{{ 'last updated date' }}</th>
+              <th>{{ 'product' }}</th>
+              <th>{{ 'Edit' }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of form.list; let i = index" align="center">
+              <td><input type="checkbox" #checkboxes (change)="checklistUpdate()" name="list_name" [id]="m.id" /></td>
+              <td>{{ (form.pageNo * 5) + i + 1 }}</td>
+              <td>{{ m.supplierName }}</td>
+              <td>{{ m.quantity }}</td>
+              <td>{{ convertToLocalDate(m.lastUpdatedDate) }}</td>
+              <td>{{ m.productName }}</td>
+              <td>
+                <button class="fa fa-edit text-primary" id="nnn" (click)="forward('/inventory/' + m.id)"></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-flex justify-content-between mt-3">
+        <button (click)="previous()" [disabled]="form.pageNo == 0" class="btn btn-info">{{ 'Previous' | translate
+          }}</button>
+        <div *ngIf="form.list.length == 0">
+          <a class="btn btn-warning mr-1" [routerLink]="['/inventorylist']" (click)="exit()">{{ 'Back' |
+            translate }}</a>
+        </div>
+        <button (click)="next()" [disabled]="nextList == 0" class="btn btn-info">{{ 'Next' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

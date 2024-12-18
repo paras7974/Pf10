@@ -1,0 +1,177 @@
+<app-navbar></app-navbar>
+<style>
+  .grad {
+    background-image: linear-gradient(to bottom right, rgb(32, 168, 168), rgb(219, 231, 237));
+    background-repeat: no-repeat;
+    background-size: 100%;
+    padding-bottom: 25px;
+  }
+
+  .input-group-addon {
+    box-shadow: 9px 8px 7px #001a33;
+  }
+
+  .required-field {
+    color: red;
+    font-weight: bold;
+  }
+
+  .alertRedColor {
+    color: red;
+  }
+
+  .card-body {
+    padding: 2rem;
+  }
+
+  .input-group-text i {
+    width: 1.5rem;
+  }
+
+  .btn-primary,
+  .btn-success,
+  .btn-warning {
+    width: 100%;
+  }
+
+  .form-control {
+    height: calc(2.25rem + 2px);
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .input-group-prepend .input-group-text {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+  }
+
+  .input-group-prepend .input-group-text i {
+    color: #495057;
+  }
+
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .textarea-height {
+    height: 100px;
+  }
+
+  .card {
+    margin: auto;
+    max-width: 500px;
+  }
+</style>
+
+<div class="container-fluid"
+  style="padding: 2% 0; background: url('assets/files/wall.jpg') no-repeat center center; background-attachment: fixed; background-size: cover; width: 100%; height: auto;">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body input-group-addon grad">
+          <form name="userForm">
+            <h2 *ngIf="!form.data.id" class="text-primary font-weight-bold text-center">{{ 'Add Loans' |
+              translate }}
+            </h2>
+            <h2 *ngIf="form.data.id" class="text-primary font-weight-bold text-center">{{ 'Update Loans' |
+              translate }}
+            </h2>
+
+            <div *ngIf="!form.error && form.message" class="alert alert-success alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              {{ form.message }}
+            </div>
+
+            <div *ngIf="form.error && form.message" class="alert alert-danger alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              {{ form.message }}
+            </div>
+
+            <div class="form-group">
+              <label><b>{{ 'CustomerId' | translate }}</b><span class="required-field">*</span></label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text"><i class="fa fa-flag grey-text"></i></div>
+                </div>
+                <select class="form-control" name="customerIdId" [(ngModel)]="form.data.customerIdId"
+                  aria-label="ngSelected">
+                  <option [ngValue]="undefined">{{ 'Select customerId' | translate }}</option>
+                  <option *ngFor="let obj of form.preload.customerIdList" [value]="obj.key">{{ obj.key }}</option>
+                </select>
+              </div>
+              <span *ngIf="form.inputerror.customerIdId" class="alertRedColor">{{form.inputerror.customerIdId}}</span>
+            </div>
+
+            <form [formGroup]="userForm">
+              <div class="form-group">
+                <label for="loanAmount">Loan Amount</label>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text"><i class="fa fa-flag grey-text"></i></div>
+                  </div>
+                <input type="number" class="form-control" id="loanAmount" formControlName="loanAmount">
+                <div *ngIf="userForm.get('loanAmount').invalid && (userForm.get('loanAmount').dirty || userForm.get('loanAmount').touched)">
+                  <div *ngIf="userForm.get('loanAmount').errors?.invalidRange" class="text-danger">Loan amount must be between 50,000 and 1,000,000.</div>
+                </div>
+                <span *ngIf="form.inputerror.loanAmount" class="alertRedColor">{{form.inputerror.loanAmount}}</span>
+              </div>
+            
+              <!--<button type="submit" class="btn btn-primary" [disabled]="userForm.invalid">Submit</button> -->
+        
+
+            
+            
+            
+
+            <div class="form-group">
+              <label><b>{{ 'Interest Rate' | translate }}</b><span class="required-field">*</span></label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text"><i class="fa fa-phone grey-text"></i></div>
+                </div>
+                <input type="number" name="interestRate" [(ngModel)]="form.data.interestRate" class="form-control"
+                  placeholder="{{ 'Enter interestRate' | translate }}">
+
+
+              </div>
+              <span *ngIf="form.inputerror.interestRate" class="alertRedColor">{{ form.inputerror.interestRate}}</span>
+            </div>
+
+            <div class="form-group">
+              <label><b>{{ 'Loan Start Date' | translate }}</b><span class="required-field"></span></label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text"><i class="fa fa-calendar-alt grey-text"></i></div>
+                </div>
+                <input type="date" name="loanStartDate" [value]="form.data.loanStartDate | date:'yyyy-MM-dd'"
+                  (input)="form.data.loanStartDate=parseDate($event.target.value)" class="form-control" required />
+              </div>
+              <span *ngIf="form.inputerror.loanStartDate" class="alertRedColor">{{ form.inputerror.loanStartDate
+                }}</span>
+            </div>
+
+
+            <div class="row pt-2 pb-3 justify-content-center">
+              <div class="col-md-4">
+                <button *ngIf="!form.data.id" (click)="onUpload()" class="btn btn-success">{{ 'Save' | translate
+                  }}</button>
+              </div>
+              <div class="col-md-4">
+                <button *ngIf="form.data.id" (click)="onUpload()" class="btn btn-success">{{ 'Update' | translate
+                  }}</button>
+              </div>
+              <div class="col-md-4">
+                <a class="btn btn-warning" type="button" [routerLink]="['/loanslist']">{{ 'List' | translate
+                  }}</a>
+              </div>
+            </div>
+  
+      </div>
+</form>
+</form>
+  </div>
+</div>
+<app-footer></app-footer>

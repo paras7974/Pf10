@@ -1,0 +1,218 @@
+<app-navbar></app-navbar>
+<style>
+  .grad {
+    background-image: linear-gradient(to bottom right, rgb(32, 168, 168), rgb(219, 231, 237));
+    background-repeat: no-repeat;
+    background-size: 100%;
+    padding-bottom: 25px;
+  }
+
+  .input-group-addon {
+    box-shadow: 9px 8px 7px #001a33;
+  }
+
+  .required-field {
+    color: red;
+    font-weight: bold;
+  }
+
+  .alertRedColor {
+    color: red;
+  }
+
+  .card-body {
+    padding: 2rem;
+  }
+
+  .input-group-text i {
+    width: 1.5rem;
+  }
+
+  .btn-primary,
+  .btn-success,
+  .btn-warning {
+    width: 100%;
+  }
+
+  .form-control {
+    height: calc(2.25rem + 2px);
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .input-group-prepend .input-group-text {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+  }
+
+  .input-group-prepend .input-group-text i {
+    color: #495057;
+  }
+
+  .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .textarea-height {
+    height: 100px;
+  }
+
+  .card {
+    width: 100%;
+    /* Adjusted width to fill its container */
+    max-width: 600px;
+    /* Added max-width for a responsive design */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    /* Added box-shadow for a better look */
+    margin-bottom: 20px;
+    /* Added margin bottom for spacing */
+    margin: auto;
+    /* Centering the card horizontally */
+  }
+
+  .container-fluid {
+    min-height: 100vh;
+    padding: 2% 0;
+    background: url('assets/files/wall.jpg') no-repeat center center;
+    background-attachment: fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center content horizontally */
+    justify-content: space-between;
+    /* Ensure content spacing */
+  }
+
+  .content {
+    flex: 1;
+    /* Allows the content area to expand */
+    display: flex;
+    justify-content: center;
+    /* Center content horizontally */
+    align-items: center;
+    /* Center content vertically */
+    padding: 20px;
+    width: 100%;
+    /* Ensure content stretches */
+    max-width: 800px;
+    /* Adjusted max-width for content */
+  }
+
+  app-footer {
+    width: 100%;
+    flex-shrink: 0;
+    /* Prevents footer from shrinking */
+  }
+
+  form {
+    width: 100%;
+    /* Ensures form stretches to fit container */
+    max-width: 600px;
+    /* Adjust as needed for form width */
+  }
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  .alert {
+    margin-bottom: 20px;
+  }
+</style>
+
+<div class="container-fluid">
+  <div class="content">
+    <div class="card">
+      <div class="card-body input-group-addon grad">
+        <form name="userForm">
+          <h2 *ngIf="!form.data.id" class="text-primary font-weight-bold text-center">{{ 'Add Order' | translate }}</h2>
+          <h2 *ngIf="form.data.id" class="text-primary font-weight-bold text-center">{{ 'Update Order' | translate }}
+          </h2>
+
+          <div *ngIf="!form.error && form.message" class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ form.message }}
+          </div>
+
+          <div *ngIf="form.error && form.message" class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ form.message }}
+          </div>
+
+          <div class="form-group">
+            <label><b>{{ 'Customer' | translate }}</b><span class="required-field">*</span></label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text"><i class="fa fa-flag grey-text"></i></div>
+              </div>
+              <select class="form-control" name="customerIdId" [(ngModel)]="form.data.customerId"
+                aria-label="ngSelected">
+                <option [ngValue]="undefined">{{ 'Select customer' | translate }}</option>
+                <option *ngFor="let obj of form.preload.customerList" [value]="obj.key">{{ obj.value }}</option>
+              </select>
+            </div>
+            <span *ngIf="form.inputerror.customerId" class="alertRedColor">{{form.inputerror.customerId}}</span>
+          </div>
+
+          <div class="form-group">
+            <label><b>{{ 'Product Name' | translate }}</b><span class="required-field">*</span></label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text"><i class="fa fa-box grey-text"></i></div>
+                <!-- Changed icon for product name -->
+              </div>
+              <input type="text" name="productName" [(ngModel)]="form.data.productName" class="form-control"
+                placeholder="{{ 'Enter productName' | translate }}" (keypress)="validateProductName($event)"
+                maxlength="20" minlength="3">
+            </div>
+            <span *ngIf="form.inputerror.productName" class="alertRedColor">{{ form.inputerror.productName}}</span>
+          </div>
+
+          <div class="form-group">
+            <label><b>{{ 'Quantity' | translate }}</b><span class="required-field">*</span></label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text"><i class="fa fa-sort-numeric-up grey-text"></i></div>
+                <!-- Changed icon for quantity -->
+              </div>
+              <input type="number" name="quantity" [(ngModel)]="form.data.quantity" class="form-control"
+                placeholder="{{ 'Enter quantity' | translate }}" (keypress)="validateQuantity($event)">
+            </div>
+            <span *ngIf="form.inputerror.quantity" class="alertRedColor">{{ form.inputerror.quantity}}</span>
+          </div>
+
+          <div class="form-group">
+            <label><b>{{ 'Order Date' | translate }}</b><span class="required-field">*</span></label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text"><i class="fa fa-calendar-alt grey-text"></i></div>
+              </div>
+              <input type="date" name="orderDate" [value]="form.data.orderDate | date:'yyyy-MM-dd'"
+                (input)="form.data.orderDate=parseDate($event.target.value)" class="form-control" required />
+            </div>
+            <span *ngIf="form.inputerror.orderDate" class="alertRedColor">{{ form.inputerror.orderDate }}</span>
+          </div>
+
+          <div class="row pt-2 pb-3 justify-content-center">
+            <div class="col-md-4">
+              <button *ngIf="!form.data.id" (click)="onUpload()" class="btn btn-success">{{ 'Save' | translate
+                }}</button>
+            </div>
+            <div class="col-md-4">
+              <button *ngIf="form.data.id" (click)="onUpload()" class="btn btn-success">{{ 'Update' | translate
+                }}</button>
+            </div>
+            <div class="col-md-4">
+              <a class="btn btn-warning" type="button" [routerLink]="['/orderlist']">{{ 'List' | translate }}</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<app-footer></app-footer>
